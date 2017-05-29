@@ -1,5 +1,5 @@
 <?php
-namespace Barantaran
+namespace Barantaran;
 
 use GuzzleHttp\Client;
 
@@ -18,25 +18,36 @@ class Platform
         $this->HMACKey = $HMACKey;
     }
 
-    public function postObject($filePath, $name = null)
+    public function postObject($filePath, $name = "file")
     {
-        $date = new DateTime();
+        $date = new \DateTime();
         $time = $date->getTimestamp();
 
         $urlBase = $this->point."/".$this->version."/objects?apiuserid=".$this->apiUserId."&timestamp=".$time;
-        $message = "POST+".$message;
+        $message = "POST+".$urlBase;
 
-        $hash = hash_hmac("sha256", $message, $HMACKey);
+        $hash = hash_hmac("sha256", $message, $this->HMACKey);
 
         $url = "https://".$urlBase."&hash=".$hash;
 
-        $body = fopen($filePath, 'r');
+        $file = fopen($filePath, 'r');
+
         $client = new Client();
-        $r = $client->request('POST', $url, ['body' => $body]);
+
+        $r = $client->request('POST', $url, 
+            [
+                'multipart' => [
+                    [
+                        "name" => $name, 
+                        "contents" => $file
+                    ]
+                ]
+            ]
+        );
 
         $result = [
             "url"=>$url,
-            "response" => $r
+            "response" => $r->getBody()->getContents()
             ];
 
         return $result;
