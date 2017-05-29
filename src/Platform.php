@@ -7,14 +7,15 @@ class Platform
 {
     protected $apiUserId;
     protected $secretKey;
-    protected $HMACKey = "8uYAzx0-sQrOquBKoh4kWiqILnbUk0bpL0fWSbsYHQQ=";
+    protected $HMACKey;
     protected $point = "api.platformcraft.ru";
     protected $version = 1;
 
-    function __construct($apiUserId, $secretKey)
+    function __construct($apiUserId, $secretKey, $HMACKey)
     {
         $this->apiUserId = $apiUserId;
         $this->secretKey = $secretKey;
+        $this->HMACKey = $HMACKey;
     }
 
     public function postObject($filePath, $name = null)
