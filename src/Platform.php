@@ -9,11 +9,13 @@ class Platform
     protected $HMACKey;
     protected $point = "api.platformcraft.ru";
     protected $version = 1;
+    protected $client;
 
     function __construct($apiUserId, $HMACKey)
     {
         $this->apiUserId = $apiUserId;
         $this->HMACKey = $HMACKey;
+        $this->client = new Client();
     }
 
     public function postObject($filePath, $name = "file")
@@ -30,9 +32,8 @@ class Platform
 
         $file = fopen($filePath, 'r');
 
-        $client = new Client();
 
-        $r = $client->request('POST', $url, 
+        $r = $this->client->request('POST', $url,
             [
                 'multipart' => [
                     [
