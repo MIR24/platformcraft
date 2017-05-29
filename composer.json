@@ -1,9 +1,14 @@
 {
-    "name": "barantaran/web",
+    "name": "barantaran/platformcraft",
     "description": "platformcraft CDN API",
     "type": "library",
     "require": {
         "guzzlehttp/guzzle": "^6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "barantaran\\platformcraft\\": "src"
+        }
     },
     "authors": [
         {
