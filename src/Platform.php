@@ -6,15 +6,13 @@ use GuzzleHttp\Client;
 class Platform
 {
     protected $apiUserId;
-    protected $secretKey;
     protected $HMACKey;
     protected $point = "api.platformcraft.ru";
     protected $version = 1;
 
-    function __construct($apiUserId, $secretKey, $HMACKey)
+    function __construct($apiUserId, $HMACKey)
     {
         $this->apiUserId = $apiUserId;
-        $this->secretKey = $secretKey;
         $this->HMACKey = $HMACKey;
     }
 
