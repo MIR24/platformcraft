@@ -1,5 +1,5 @@
 <?php
-namespace Barantaran;
+namespace Barantaran\Platformcraft;
 
 use GuzzleHttp\Client;
 
