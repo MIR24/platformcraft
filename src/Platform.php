@@ -1,7 +1,8 @@
 <?php
-namespace Barantaran;
+namespace Barantaran\Platformcraft;
 
 use GuzzleHttp\Client;
+use Barantaran\Utility as Util;
 
 class Platform
 {
@@ -9,34 +10,32 @@ class Platform
     protected $HMACKey;
     protected $point = "api.platformcraft.ru";
     protected $version = 1;
+    protected $client;
 
     function __construct($apiUserId, $HMACKey)
     {
         $this->apiUserId = $apiUserId;
         $this->HMACKey = $HMACKey;
+        $this->client = new Client();
     }
 
     public function postObject($filePath, $name = "file")
     {
-        $date = new \DateTime();
-        $time = $date->getTimestamp();
-
-        $urlBase = $this->point."/".$this->version."/objects?apiuserid=".$this->apiUserId."&timestamp=".$time;
+        $urlBase = $this->getPointBase() . "/objects?" . Util::getIdentityString($this->apiUserId);
         $message = "POST+".$urlBase;
 
-        $hash = hash_hmac("sha256", $message, $this->HMACKey);
+        $hash = Util::getHash($message, $this->HMACKey);
 
-        $url = "https://".$urlBase."&hash=".$hash;
+        $urlFull = "https://".$urlBase."&hash=".$hash;
 
         $file = fopen($filePath, 'r');
 
-        $client = new Client();
 
-        $r = $client->request('POST', $url, 
+        $response = $this->client->request('POST', $urlFull,
             [
                 'multipart' => [
                     [
-                        "name" => $name, 
+                        "name" => $name,
                         "contents" => $file
                     ]
                 ]
@@ -44,10 +43,15 @@ class Platform
         );
 
         $result = [
-            "url"=>$url,
-            "response" => $r->getBody()->getContents()
+            "url"=>$urlFull,
+            "response" => $response->getBody()->getContents()
             ];
 
         return $result;
+    }
+
+    protected function getPointBase()
+    {
+        return $this->point."/".$this->version;
     }
 }
