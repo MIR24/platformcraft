@@ -2,7 +2,7 @@
 namespace Barantaran\Platformcraft;
 
 use GuzzleHttp\Client;
-use Barantaran\Utility as Util;
+use Barantaran\Platformcraft\Utility as Util;
 
 class Platform
 {
