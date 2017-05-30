@@ -1,6 +1,6 @@
 <?php
 
-namespace Barantaran;
+namespace Barantaran\Platformcraft;
 
 class Utility
 {
