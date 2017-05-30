@@ -1,57 +1,67 @@
 <?php
 namespace Barantaran\Platformcraft;
 
-use GuzzleHttp\Client;
-use Barantaran\Platformcraft\Utility as Util;
+use Barantaran\Platformcraft\PlatformWrap;
 
-class Platform
+class Platform extends PlatformWrap
 {
-    protected $apiUserId;
-    protected $HMACKey;
-    protected $point = "api.platformcraft.ru";
-    protected $version = 1;
-    protected $client;
 
     function __construct($apiUserId, $HMACKey)
     {
-        $this->apiUserId = $apiUserId;
-        $this->HMACKey = $HMACKey;
-        $this->client = new Client();
+        if(empty($apiUserId) || empty ($HMACKey)) return false;
+
+        parent::__construct($apiUserId, $HMACKey);
     }
 
-    public function postObject($filePath, $name = "file")
+
+    public function setupVideoPlayer($videoFilePath, $name = "file")
     {
-        $urlBase = $this->getPointBase() . "/objects?" . Util::getIdentityString($this->apiUserId);
-        $message = "POST+".$urlBase;
+        $videoUploadResult = $this->postObject($videoFilePath, $name);
 
-        $hash = Util::getHash($message, $this->HMACKey);
+        if(!$videoUploadResult) {
+            $this->error[] = ["error" => "Can't upload file to platform", "data" => $videoFilePath];
+            return false;
+        }
 
-        $urlFull = "https://".$urlBase."&hash=".$hash;
-
-        $file = fopen($filePath, 'r');
-
-
-        $response = $this->client->request('POST', $urlFull,
+        $playerSetupResult = $this->client->request('POST', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'POST'),
             [
-                'multipart' => [
+                "json" =>
+                [
+                    "name" => "player" . $videoUploadResult["response"]["object"]["name"],
+                    "videos" =>
                     [
-                        "name" => $name,
-                        "contents" => $file
+                        $videoUploadResult["response"]["object"]["name"] => $videoUploadResult["response"]["object"]["id"]
                     ]
                 ]
             ]
         );
 
-        $result = [
-            "url"=>$urlFull,
-            "response" => $response->getBody()->getContents()
-            ];
-
-        return $result;
+        return json_decode($playerSetupResult->getBody()->getContents(),1);
     }
 
-    protected function getPointBase()
+    public function attachImageToPlayer($imageFilePath, $playerId)
     {
-        return $this->point."/".$this->version;
+        if(!$imageFilePath || !$playerId) {
+           $this->error[] = ["error" => "Wrong image path or player id"];
+           return false;
+        }
+
+        $imageUploadResult = $this->postObject($imageFilePath);
+
+        if(!$imageUploadResult) {
+            $this->error[] = ["error" => "Can't upload file to platform", "data" => $imageFilePath];
+            return false;
+        }
+
+        $imageSetupResult = $this->client->request('PUT', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'PUT', $playerId),
+            [
+                "json" =>
+                [
+                    "screen_shot_id" => $imageSetupResult["response"]["object"]["id"]
+                ]
+            ]
+        );
+
+        return json_decode($imageSetupResult->getBody()->getContents(),1);
     }
 }
