@@ -3,7 +3,7 @@ $ composer require barantaran/platformcraft
 ```
 then
 
-```
+```php
 <?php
 use \Barantaran\Platformcraft\Platform;
 
