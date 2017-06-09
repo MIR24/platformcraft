@@ -1,7 +1,6 @@
 ```
 $ composer require barantaran/platformcraft
 ```
-then
 
 ```php
 <?php
