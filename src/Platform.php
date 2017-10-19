@@ -37,24 +37,28 @@ class Platform extends PlatformWrap
         return $this->sendRequest('POST', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'POST'), $additional);
     }
 
-    public function attachImageToPlayer($imageFilePath, $playerId)
+    public function attachImageToPlayer($imageFilePathOrCdnId, $playerId, $useCdnId = false)
     {
-        if(!$imageFilePath || !$playerId) {
+        if(!$imageFilePathOrCdnId || !$playerId) {
            $this->error[] = ["error" => "Wrong image path or player id"];
            return false;
         }
-
-        $imageUploadResult = $this->postObject($imageFilePath);
-
-        if(!$imageUploadResult) {
-            $this->error[] = ["error" => "Can't upload file to platform", "data" => $imageFilePath];
-            return false;
+        
+        if($useCdnId){
+          $imageUploadResult = $imageFilePathOrCdnId;
+        } else {
+          $imageUploadResult = $this->postObject($imageFilePathOrCdnId);
+          if(!$imageUploadResult) {
+              $this->error[] = ["error" => "Can't upload file to platform", "data" => $imageFilePathOrCdnId];
+              return false;
+          }
+          $imageUploadResult = $imageUploadResult["response"]["object"]["id"];
         }
         
         $additional = [
             "json" =>
             [
-                "screen_shot_id" => $imageUploadResult["response"]["object"]["id"]
+                "screen_shot_id" => $imageUploadResult
             ]
         ];
         
