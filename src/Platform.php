@@ -64,4 +64,28 @@ class Platform extends PlatformWrap
 
         return json_decode($imageSetupResult->getBody()->getContents(),1);
     }
+    
+    public function deleteObject($objectId)
+    {
+        if(!$objectId) {
+           $this->error[] = ["error" => "Object id needed"];
+           return false;
+        }
+        
+        $objectDeletedResult = $this->client->request('DELETE', $this->getAccessPointUrl(PlatformType::OBJ_PNT, 'DELETE', $objectId));
+        
+        return json_decode($objectDeletedResult->getBody()->getContents(),1);
+    }
+    
+    public function deletePlayer($playerId)
+    {
+        if(!$playerId) {
+           $this->error[] = ["error" => "Player id needed"];
+           return false;
+        }
+        
+        $playerDeletedResult = $this->client->request('DELETE', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'DELETE', $playerId));
+        
+        return json_decode($playerDeletedResult->getBody()->getContents(),1);
+    }
 }
