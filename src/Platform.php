@@ -22,47 +22,47 @@ class Platform extends PlatformWrap
             $this->error[] = ["error" => "Can't upload file to platform", "data" => $videoFilePath];
             return false;
         }
-
-        $playerSetupResult = $this->client->request('POST', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'POST'),
+        
+        $additional = [
+            "json" =>
             [
-                "json" =>
+                "name" => "player" . $videoUploadResult["response"]["object"]["name"],
+                "videos" =>
                 [
-                    "name" => "player" . $videoUploadResult["response"]["object"]["name"],
-                    "videos" =>
-                    [
-                        $videoUploadResult["response"]["object"]["name"] => $videoUploadResult["response"]["object"]["id"]
-                    ]
+                    $videoUploadResult["response"]["object"]["name"] => $videoUploadResult["response"]["object"]["id"]
                 ]
             ]
-        );
-
-        return json_decode($playerSetupResult->getBody()->getContents(),1);
+        ];
+        
+        return $this->sendRequest('POST', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'POST'), $additional);
     }
 
-    public function attachImageToPlayer($imageFilePath, $playerId)
+    public function attachImageToPlayer($imageFilePathOrCdnId, $playerId, $useCdnId = false)
     {
-        if(!$imageFilePath || !$playerId) {
+        if(!$imageFilePathOrCdnId || !$playerId) {
            $this->error[] = ["error" => "Wrong image path or player id"];
            return false;
         }
-
-        $imageUploadResult = $this->postObject($imageFilePath);
-
-        if(!$imageUploadResult) {
-            $this->error[] = ["error" => "Can't upload file to platform", "data" => $imageFilePath];
-            return false;
+        
+        if($useCdnId){
+          $imageUploadResult = $imageFilePathOrCdnId;
+        } else {
+          $imageUploadResult = $this->postObject($imageFilePathOrCdnId);
+          if(!$imageUploadResult) {
+              $this->error[] = ["error" => "Can't upload file to platform", "data" => $imageFilePathOrCdnId];
+              return false;
+          }
+          $imageUploadResult = $imageUploadResult["response"]["object"]["id"];
         }
-
-        $imageSetupResult = $this->client->request('PUT', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'PUT', $playerId),
+        
+        $additional = [
+            "json" =>
             [
-                "json" =>
-                [
-                    "screen_shot_id" => $imageSetupResult["response"]["object"]["id"]
-                ]
+                "screen_shot_id" => $imageUploadResult
             ]
-        );
-
-        return json_decode($imageSetupResult->getBody()->getContents(),1);
+        ];
+        
+        return $this->sendRequest('PUT', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'PUT', $playerId), $additional);
     }
     
     public function deleteObject($objectId)
@@ -72,9 +72,7 @@ class Platform extends PlatformWrap
            return false;
         }
         
-        $objectDeletedResult = $this->client->request('DELETE', $this->getAccessPointUrl(PlatformType::OBJ_PNT, 'DELETE', $objectId));
-        
-        return json_decode($objectDeletedResult->getBody()->getContents(),1);
+        return $this->sendRequest('DELETE', $this->getAccessPointUrl(PlatformType::OBJ_PNT, 'DELETE', $objectId));
     }
     
     public function deletePlayer($playerId)
@@ -84,8 +82,6 @@ class Platform extends PlatformWrap
            return false;
         }
         
-        $playerDeletedResult = $this->client->request('DELETE', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'DELETE', $playerId));
-        
-        return json_decode($playerDeletedResult->getBody()->getContents(),1);
+        return $this->sendRequest('DELETE', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'DELETE', $playerId));
     }
 }

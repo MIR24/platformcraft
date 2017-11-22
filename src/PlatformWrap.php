@@ -4,6 +4,8 @@ namespace Barantaran\Platformcraft;
 use Barantaran\Platformcraft\PlatformType as PlatformType;
 use Barantaran\Platformcraft\Utility as Util;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Psr7;
 
 class PlatformWrap
 {
@@ -34,22 +36,26 @@ class PlatformWrap
             $this->error[] = [ "error" => "Can't open file", "data" => $filePath ];
             return false;
         }
-
-        $response = $this->client->request('POST', $accessPointUrl,
-            [
-                'multipart' => [
-                    [
-                        "name" => $name,
-                        "contents" => $file
-                    ]
+        
+        $additional = [
+            'multipart' => [
+                [
+                    "name" => $name,
+                    "contents" => $file
                 ]
             ]
-        );
-
-        $result = [
-            "url"=>$accessPointUrl,
-            "response" => json_decode($response->getBody()->getContents(),1)
-            ];
+        ];
+        
+        $response = $this->sendRequest('POST', $accessPointUrl, $additional);
+        
+        if($response['code'] == 200){
+          $result = [
+              "url"=>$accessPointUrl,
+              "response" => $response
+              ];
+        } else {
+          $result = null;
+        }
 
         return $result;
     }
@@ -76,5 +82,35 @@ class PlatformWrap
     protected function getMyError()
     {
         return $this->error;
+    }
+    
+    protected function sendRequest($type, $accessPointUrl, $additional = null)
+    {
+      try {
+        if($additional){
+          $response = $this->client->request($type, $accessPointUrl, $additional);
+        } else {
+          $response = $this->client->request($type, $accessPointUrl);
+        }
+        return json_decode($response->getBody(), 1);
+      } catch (ClientException $e) {
+        $response['request'] = Psr7\str($e->getRequest());
+        $response['message'] = $e->getMessage();
+        if ($e->hasResponse()) {
+          $response['code'] = $e->getResponse()->getStatusCode();
+          $response['response'] = Psr7\str($e->getResponse());
+        }
+        return $response;
+      } catch (RequestException $e) {
+        $response['request'] = Psr7\str($e->getRequest());
+        $response['message'] = $e->getMessage();
+        if ($e->hasResponse()) {
+          $response['code'] = $e->getResponse()->getStatusCode();
+          $response['response'] = Psr7\str($e->getResponse());
+        }
+        return $response;
+      } catch (\Exception $e) {
+        return ['code' => 'unknown', 'message' => $e->getMessage()];
+      }
     }
 }
