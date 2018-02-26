@@ -13,6 +13,10 @@ class Platform extends PlatformWrap
         parent::__construct($apiUserId, $HMACKey);
     }
 
+    public function getObject($objectId)
+    {
+        return $this->sendRequest('GET', $this->getAccessPointUrl(PlatformType::OBJ_ACCESS_PNT, 'GET', $objectId));
+    }
 
     public function setupVideoPlayer($videoFilePath, $name = "file")
     {
