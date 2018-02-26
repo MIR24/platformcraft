@@ -62,7 +62,7 @@ class PlatformWrap
         return $result;
     }
 
-    protected function getAccessPointUrl($pointType = PlatformType::OBJ_PNT, $requestType = 'POST', $objectId = null)
+    protected function getAccessPointUrl($pointType = PlatformType::OBJ_ACCESS_PNT, $requestType = 'POST', $objectId = null)
     {
         if ($objectId) {
             $urlBase = $this->getPointBase() . "/$pointType/$objectId?" . Util::getIdentityString($this->apiUserId);

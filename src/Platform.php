@@ -36,7 +36,7 @@ class Platform extends PlatformWrap
             ]
         ];
 
-        return $this->sendRequest('POST', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'POST'), $additional);
+        return $this->sendRequest('POST', $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'POST'), $additional);
     }
 
     public function attachImageToPlayer($imageFilePathOrCdnId, $playerId, $useCdnId = false)
@@ -64,7 +64,7 @@ class Platform extends PlatformWrap
             ]
         ];
 
-        return $this->sendRequest('PUT', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'PUT', $playerId), $additional);
+        return $this->sendRequest('PUT', $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'PUT', $playerId), $additional);
     }
 
     public function deleteObject($objectId)
@@ -74,7 +74,7 @@ class Platform extends PlatformWrap
             return false;
         }
 
-        return $this->sendRequest('DELETE', $this->getAccessPointUrl(PlatformType::OBJ_PNT, 'DELETE', $objectId));
+        return $this->sendRequest('DELETE', $this->getAccessPointUrl(PlatformType::OBJ_ACCESS_PNT, 'DELETE', $objectId));
     }
 
     public function deletePlayer($playerId)
@@ -84,6 +84,6 @@ class Platform extends PlatformWrap
             return false;
         }
 
-        return $this->sendRequest('DELETE', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'DELETE', $playerId));
+        return $this->sendRequest('DELETE', $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'DELETE', $playerId));
     }
 }
