@@ -64,7 +64,34 @@ class Platform extends PlatformWrap
         
         return $this->sendRequest('PUT', $this->getAccessPointUrl(PlatformType::PLR_PNT, 'PUT', $playerId), $additional);
     }
-    
+
+    public function getVideoTranscodeFormats()
+    {
+        return $this->sendRequest('GET', $this->getAccessPointUrl(PlatformType::TPS_ACCESS_PNT, 'GET'));
+    }
+
+    public function setupVideoTranscodeTask($objectId, $presetIds)
+    {
+        $additional = [
+            "json" =>
+            [
+                "presets" => $presetIds
+            ]
+        ];
+
+        return $this->sendRequest('POST', $this->getAccessPointUrl(PlatformType::TCD_ACCESS_PNT, 'POST', $objectId), $additional);
+    }
+
+    public function getVideoTranscodeTask($taskId)
+    {
+        return $this->sendRequest('GET', $this->getAccessPointUrl(PlatformType::TTS_ACCESS_PNT, 'GET', $taskId));
+    }
+
+    public function getVideoTranscodeTaskList()
+    {
+        return $this->sendRequest('GET', $this->getAccessPointUrl(PlatformType::TTS_ACCESS_PNT, 'GET'));
+    }
+
     public function deleteObject($objectId)
     {
         if(!$objectId) {
