@@ -17,52 +17,20 @@ class PlatformWrap
     protected $error = null;
 
 
-    function __construct($apiUserId, $HMACKey)
+    public function __construct($apiUserId, $HMACKey)
     {
-        if(empty($apiUserId) || empty ($HMACKey)) return false;
+        if (empty($apiUserId) || empty($HMACKey)) {
+            return false;
+        }
 
         $this->apiUserId = $apiUserId;
         $this->HMACKey = $HMACKey;
         $this->client = new Client();
     }
 
-    protected function postObject($filePath, $name = "file")
+    protected function getAccessPointUrl($pointType = PlatformType::OBJ_ACCESS_PNT, $requestType = 'POST', $objectId = null)
     {
-        $accessPointUrl = $this->getAccessPointUrl();
-
-        $file = fopen($filePath, 'r');
-
-        if(!$file) {
-            $this->error[] = [ "error" => "Can't open file", "data" => $filePath ];
-            return false;
-        }
-        
-        $additional = [
-            'multipart' => [
-                [
-                    "name" => $name,
-                    "contents" => $file
-                ]
-            ]
-        ];
-        
-        $response = $this->sendRequest('POST', $accessPointUrl, $additional);
-        
-        if($response['code'] == 200){
-          $result = [
-              "url"=>$accessPointUrl,
-              "response" => $response
-              ];
-        } else {
-          $result = null;
-        }
-
-        return $result;
-    }
-
-    protected function getAccessPointUrl($pointType = PlatformType::OBJ_PNT, $requestType = 'POST', $objectId = null)
-    {
-        if($objectId){
+        if ($objectId) {
             $urlBase = $this->getPointBase() . "/$pointType/$objectId?" . Util::getIdentityString($this->apiUserId);
         } else {
             $urlBase = $this->getPointBase() . "/$pointType?" . Util::getIdentityString($this->apiUserId);
@@ -83,34 +51,34 @@ class PlatformWrap
     {
         return $this->error;
     }
-    
+
     protected function sendRequest($type, $accessPointUrl, $additional = null)
     {
-      try {
-        if($additional){
-          $response = $this->client->request($type, $accessPointUrl, $additional);
-        } else {
-          $response = $this->client->request($type, $accessPointUrl);
+        try {
+            if ($additional) {
+                $response = $this->client->request($type, $accessPointUrl, $additional);
+            } else {
+                $response = $this->client->request($type, $accessPointUrl);
+            }
+            return json_decode($response->getBody(), 1);
+        } catch (ClientException $e) {
+            $response['request'] = Psr7\str($e->getRequest());
+            $response['message'] = $e->getMessage();
+            if ($e->hasResponse()) {
+                $response['code'] = $e->getResponse()->getStatusCode();
+                $response['response'] = Psr7\str($e->getResponse());
+            }
+                return $response;
+        } catch (RequestException $e) {
+            $response['request'] = Psr7\str($e->getRequest());
+            $response['message'] = $e->getMessage();
+            if ($e->hasResponse()) {
+                $response['code'] = $e->getResponse()->getStatusCode();
+                $response['response'] = Psr7\str($e->getResponse());
+            }
+            return $response;
+        } catch (\Exception $e) {
+            return ['code' => 'unknown', 'message' => $e->getMessage()];
         }
-        return json_decode($response->getBody(), 1);
-      } catch (ClientException $e) {
-        $response['request'] = Psr7\str($e->getRequest());
-        $response['message'] = $e->getMessage();
-        if ($e->hasResponse()) {
-          $response['code'] = $e->getResponse()->getStatusCode();
-          $response['response'] = Psr7\str($e->getResponse());
-        }
-        return $response;
-      } catch (RequestException $e) {
-        $response['request'] = Psr7\str($e->getRequest());
-        $response['message'] = $e->getMessage();
-        if ($e->hasResponse()) {
-          $response['code'] = $e->getResponse()->getStatusCode();
-          $response['response'] = Psr7\str($e->getResponse());
-        }
-        return $response;
-      } catch (\Exception $e) {
-        return ['code' => 'unknown', 'message' => $e->getMessage()];
-      }
     }
 }
