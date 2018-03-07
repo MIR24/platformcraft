@@ -17,7 +17,19 @@ class Platform extends PlatformWrap
 
     public function getObject($objectId)
     {
-        return $this->sendRequest('GET', $this->getAccessPointUrl(PlatformType::OBJ_ACCESS_PNT, 'GET', $objectId));
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::OBJ_ACCESS_PNT, 'GET', $objectId);
+        $response = $this->sendRequest('GET', $accessPointUrl);
+
+        if ($response['code'] == 200) {
+            $result = [
+                'url' => $accessPointUrl,
+                'response' => $response
+            ];
+        } else {
+            $result = null;
+        }
+
+        return $result;
     }
 
     public function postObject($filePath, $name = null)
