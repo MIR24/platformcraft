@@ -128,7 +128,20 @@ class Platform extends PlatformWrap
             $additional['json']['vast_ad_tag_url'] = $vast;
         }
 
-        return $this->sendRequest('POST', $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'POST'), $additional);
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'POST');
+
+        $response = $this->sendRequest('POST', $accessPointUrl, $additional);
+
+        if ($response['code'] == 200) {
+            $result = [
+                'url' => $accessPointUrl,
+                'response' => $response
+            ];
+        } else {
+            $result = null;
+        }
+
+        return $result;
     }
 
     public function attachImageToPlayer($imageFilePathOrCdnId, $playerId, $useCdnId = false)
