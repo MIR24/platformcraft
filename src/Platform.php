@@ -74,6 +74,7 @@ class Platform extends PlatformWrap
         foreach ($videos as $key => $video) {
             if (isset($video['id'])) {
                 $uploadedVideos[$key] = $video['id'];
+                $videoUploadResult = $this->getObject($video['id']);
                 continue;
             }
             $name = isset($video['name']) ? $video['name'] : null;
