@@ -18,6 +18,7 @@ class Platform extends PlatformWrap
     public function getObject($objectId)
     {
         $accessPointUrl = $this->getAccessPointUrl(PlatformType::OBJ_ACCESS_PNT, 'GET', $objectId);
+
         $response = $this->sendRequest('GET', $accessPointUrl);
 
         return $this->getResult($accessPointUrl, $response);
@@ -113,6 +114,15 @@ class Platform extends PlatformWrap
         $accessPointUrl = $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'POST');
 
         $response = $this->sendRequest('POST', $accessPointUrl, $additional);
+
+        return $this->getResult($accessPointUrl, $response);
+    }
+
+    public function getPlayer($playerId)
+    {
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'GET', $playerId);
+
+        $response = $this->sendRequest('GET', $accessPointUrl);
 
         return $this->getResult($accessPointUrl, $response);
     }
