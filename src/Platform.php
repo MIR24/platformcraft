@@ -20,16 +20,7 @@ class Platform extends PlatformWrap
         $accessPointUrl = $this->getAccessPointUrl(PlatformType::OBJ_ACCESS_PNT, 'GET', $objectId);
         $response = $this->sendRequest('GET', $accessPointUrl);
 
-        if ($response['code'] == 200) {
-            $result = [
-                'url' => $accessPointUrl,
-                'response' => $response
-            ];
-        } else {
-            $result = null;
-        }
-
-        return $result;
+        return $this->getResult($accessPointUrl, $response);
     }
 
     public function postObject($filePath, $name = null)
@@ -60,16 +51,7 @@ class Platform extends PlatformWrap
 
         $response = $this->sendRequest('POST', $accessPointUrl, $additional);
 
-        if ($response['code'] == 200) {
-            $result = [
-                'url' => $accessPointUrl,
-                'response' => $response
-            ];
-        } else {
-            $result = null;
-        }
-
-        return $result;
+        return $this->getResult($accessPointUrl, $response);
     }
 
 
@@ -132,16 +114,7 @@ class Platform extends PlatformWrap
 
         $response = $this->sendRequest('POST', $accessPointUrl, $additional);
 
-        if ($response['code'] == 200) {
-            $result = [
-                'url' => $accessPointUrl,
-                'response' => $response
-            ];
-        } else {
-            $result = null;
-        }
-
-        return $result;
+        return $this->getResult($accessPointUrl, $response);
     }
 
     public function attachImageToPlayer($imageFilePathOrCdnId, $playerId, $useCdnId = false)
@@ -174,7 +147,11 @@ class Platform extends PlatformWrap
 
     public function getVideoTranscoderFormats()
     {
-        return $this->sendRequest('GET', $this->getAccessPointUrl(PlatformType::TPS_ACCESS_PNT, 'GET'));
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::TPS_ACCESS_PNT, 'GET');
+
+        $response = $this->sendRequest('GET', $accessPointUrl);
+
+        return $this->getResult($accessPointUrl, $response);
     }
 
     public function postVideoTranscoderTask($objectId, $presetIds)
@@ -186,17 +163,29 @@ class Platform extends PlatformWrap
             ]
         ];
 
-        return $this->sendRequest('POST', $this->getAccessPointUrl(PlatformType::TCD_ACCESS_PNT, 'POST', $objectId), $additional);
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::TCD_ACCESS_PNT, 'POST', $objectId);
+
+        $response = $this->sendRequest('POST', $accessPointUrl, $additional);
+
+        return $this->getResult($accessPointUrl, $response);
     }
 
     public function getVideoTranscodeTask($taskId)
     {
-        return $this->sendRequest('GET', $this->getAccessPointUrl(PlatformType::TTS_ACCESS_PNT, 'GET', $taskId));
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::TTS_ACCESS_PNT, 'GET', $taskId);
+
+        $response = $this->sendRequest('GET', $accessPointUrl);
+
+        return $this->getResult($accessPointUrl, $response);
     }
 
     public function getVideoTranscodeTaskList()
     {
-        return $this->sendRequest('GET', $this->getAccessPointUrl(PlatformType::TTS_ACCESS_PNT, 'GET'));
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::TTS_ACCESS_PNT, 'GET');
+
+        $response = $this->sendRequest('GET', $accessPointUrl);
+
+        return $this->getResult($accessPointUrl, $response);
     }
 
     public function deleteObject($objectId)
@@ -206,7 +195,11 @@ class Platform extends PlatformWrap
             return false;
         }
 
-        return $this->sendRequest('DELETE', $this->getAccessPointUrl(PlatformType::OBJ_ACCESS_PNT, 'DELETE', $objectId));
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::OBJ_ACCESS_PNT, 'DELETE', $objectId);
+
+        $response = $this->sendRequest('DELETE', $accessPointUrl);
+
+        return $this->getResult($accessPointUrl, $response);
     }
 
     public function deletePlayer($playerId)
@@ -216,6 +209,10 @@ class Platform extends PlatformWrap
             return false;
         }
 
-        return $this->sendRequest('DELETE', $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'DELETE', $playerId));
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'DELETE', $playerId);
+
+        $response = $this->sendRequest('DELETE', $accessPointUrl);
+
+        return $this->getResult($accessPointUrl, $response);
     }
 }

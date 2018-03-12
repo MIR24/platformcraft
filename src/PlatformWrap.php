@@ -81,4 +81,16 @@ class PlatformWrap
             return ['code' => 'unknown', 'message' => $e->getMessage()];
         }
     }
+
+    protected function getResult($accessPointUrl, $response)
+    {
+        if ($response['code'] != 200) {
+            return null;
+        }
+
+        return [
+            'url' => $accessPointUrl,
+            'response' => $response
+        ];
+    }
 }
