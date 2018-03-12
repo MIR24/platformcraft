@@ -170,7 +170,7 @@ class Platform extends PlatformWrap
         return $this->getResult($accessPointUrl, $response);
     }
 
-    public function getVideoTranscodeTask($taskId)
+    public function getVideoTranscoderTask($taskId)
     {
         $accessPointUrl = $this->getAccessPointUrl(PlatformType::TTS_ACCESS_PNT, 'GET', $taskId);
 
@@ -179,7 +179,7 @@ class Platform extends PlatformWrap
         return $this->getResult($accessPointUrl, $response);
     }
 
-    public function getVideoTranscodeTaskList()
+    public function getVideoTranscoderTaskList()
     {
         $accessPointUrl = $this->getAccessPointUrl(PlatformType::TTS_ACCESS_PNT, 'GET');
 
