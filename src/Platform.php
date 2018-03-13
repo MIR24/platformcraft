@@ -225,4 +225,18 @@ class Platform extends PlatformWrap
 
         return $this->getResult($accessPointUrl, $response);
     }
+
+    public function deleteTranscoderTask($taskId)
+    {
+        if (!$taskId) {
+            $this->error[] = ["error" => "Task id needed"];
+            return false;
+        }
+
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::TTS_ACCESS_PNT, 'DELETE', $taskId);
+
+        $response = $this->sendRequest('DELETE', $accessPointUrl);
+
+        return $this->getResult($accessPointUrl, $response);
+    }
 }
