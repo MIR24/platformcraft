@@ -127,7 +127,7 @@ class Platform extends PlatformWrap
         return $this->getResult($accessPointUrl, $response);
     }
 
-    public function attachImageToPlayer($imageFilePathOrCdnId, $playerId, $useCdnId = false)
+    public function attachImageToPlayer($imageFilePathOrCdnId, $playerId, $useCdnId = false, $imageName = null)
     {
         if (!$imageFilePathOrCdnId || !$playerId) {
             $this->error[] = ["error" => "Wrong image path or player id"];
@@ -137,7 +137,7 @@ class Platform extends PlatformWrap
         if ($useCdnId) {
             $imageUploadResult = $imageFilePathOrCdnId;
         } else {
-            $imageUploadResult = $this->postObject($imageFilePathOrCdnId);
+            $imageUploadResult = $this->postObject($imageFilePathOrCdnId, $imageName);
             if (!$imageUploadResult) {
                 $this->error[] = ["error" => "Can't upload file to platform", "data" => $imageFilePathOrCdnId];
                 return false;
@@ -152,7 +152,11 @@ class Platform extends PlatformWrap
             ]
         ];
 
-        return $this->sendRequest('PUT', $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'PUT', $playerId), $additional);
+        $accessPointUrl = $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'PUT', $playerId);
+
+        $response = $this->sendRequest('PUT', $accessPointUrl, $additional);
+
+        return $this->getResult($accessPointUrl, $response);
     }
 
     public function getVideoTranscoderFormats()
