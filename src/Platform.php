@@ -142,19 +142,19 @@ class Platform extends PlatformWrap
                 $this->error[] = ["error" => "Can't upload file to platform", "data" => $imageFilePathOrCdnId];
                 return false;
             }
-            $imageUploadResult = $imageUploadResult["response"]["object"]["id"];
         }
 
         $additional = [
             "json" =>
             [
-                "screen_shot_id" => $imageUploadResult
+                "screen_shot_id" => $imageUploadResult['response']['object']['id']
             ]
         ];
 
         $accessPointUrl = $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'PUT', $playerId);
 
         $response = $this->sendRequest('PUT', $accessPointUrl, $additional);
+        $response['object'] = $imageUploadResult['response']['object'];
 
         return $this->getResult($accessPointUrl, $response);
     }
