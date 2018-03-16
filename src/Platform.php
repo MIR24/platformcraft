@@ -13,7 +13,7 @@ class Platform extends PlatformWrap
         parent::__construct($apiUserId, $HMACKey);
     }
 
-    public function getUrl($pointType = PlatformType::OBJ_ACCESS_PNT, $method = 'GET', $id = null)
+    public function getUrl($pointType = PlatformType::OBJ_PNT, $method = 'GET', $id = null)
     {
         return $this->getAccessPointUrl(
             $pointType,
