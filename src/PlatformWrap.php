@@ -28,40 +28,6 @@ class PlatformWrap
         $this->client = new Client();
     }
 
-    protected function postObject($filePath, $name = "file")
-    {
-        $accessPointUrl = $this->getAccessPointUrl();
-
-        $file = fopen($filePath, 'r');
-
-        if (!$file) {
-            $this->error[] = [ "error" => "Can't open file", "data" => $filePath ];
-            return false;
-        }
-
-        $additional = [
-            'multipart' => [
-                [
-                    "name" => $name,
-                    "contents" => $file
-                ]
-            ]
-        ];
-
-        $response = $this->sendRequest('POST', $accessPointUrl, $additional);
-
-        if ($response['code'] == 200) {
-            $result = [
-                "url"=>$accessPointUrl,
-                "response" => $response
-            ];
-        } else {
-            $result = null;
-        }
-
-        return $result;
-    }
-
     protected function getAccessPointUrl($pointType = PlatformType::OBJ_ACCESS_PNT, $requestType = 'POST', $objectId = null)
     {
         if ($objectId) {
@@ -114,5 +80,17 @@ class PlatformWrap
         } catch (\Exception $e) {
             return ['code' => 'unknown', 'message' => $e->getMessage()];
         }
+    }
+
+    protected function getResult($accessPointUrl, $response)
+    {
+        if ($response['code'] != 200) {
+            return null;
+        }
+
+        return [
+            'url' => $accessPointUrl,
+            'response' => $response
+        ];
     }
 }
