@@ -38,11 +38,6 @@ class Platform extends PlatformWrap
     {
         $accessPointUrl = $this->getAccessPointUrl();
 
-        if (!$videoUploadResult) {
-            $this->error[] = ["error" => "Can't upload file to platform", "data" => $videoFilePath];
-            return false;
-        }
-
         $file = fopen($filePath, 'r');
 
         if (!$file) {
