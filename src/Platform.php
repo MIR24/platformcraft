@@ -145,7 +145,7 @@ class Platform extends PlatformWrap
         }
 
         if ($useCdnId) {
-            $imageUploadResult = $imageFilePathOrCdnId;
+            $imageUploadResult['response']['object']['id'] = $imageFilePathOrCdnId;
         } else {
             $imageUploadResult = $this->postObject($imageFilePathOrCdnId, $imageName);
             if (!$imageUploadResult) {
@@ -162,8 +162,8 @@ class Platform extends PlatformWrap
         ];
 
         $accessPointUrl = $this->getAccessPointUrl(PlatformType::PLR_ACCESS_PNT, 'PUT', $playerId);
-
         $response = $this->sendRequest('PUT', $accessPointUrl, $additional);
+
         $response['object'] = $imageUploadResult['response']['object'];
 
         return $this->getResult($accessPointUrl, $response);
