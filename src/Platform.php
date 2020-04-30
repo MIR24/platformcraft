@@ -24,6 +24,31 @@ class Platform extends PlatformWrap
         );
     }
 
+    public function getUsedSpaceInStorage()
+    {
+        $result =  $this->getInfoAboutStorage();
+        return $result['used'];
+    }
+
+    public function getLimitSpaceInStorage()
+    {
+        $result =  $this->getInfoAboutStorage();
+        return $result['limit'];
+    }
+
+    public function getFreeSpaceInStorage()
+    {
+        $result =  $this->getInfoAboutStorage();
+        return $result['limit'] - $result['used'];
+    }
+
+    public function getInfoAboutStorage()
+    {
+        $url = $this->getAccessPointUrl(PlatformType::STORAGE_ACCESS_PNT, 'GET', null);
+        $response = $this->sendRequest('GET', $url);
+        return ($this->getResult($url, $response))['response']['storage'];
+    }
+
     public function getObject($objectId)
     {
         $accessPointUrl = $this->getAccessPointUrl(PlatformType::OBJ_ACCESS_PNT, 'GET', $objectId);
