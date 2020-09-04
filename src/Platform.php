@@ -5,6 +5,7 @@ use Barantaran\Platformcraft\PlatformWrap;
 
 class Platform extends PlatformWrap
 {
+    private $videoUploadResult;
 
     public function __construct($apiUserId, $HMACKey)
     {
@@ -13,6 +14,14 @@ class Platform extends PlatformWrap
         }
 
         parent::__construct($apiUserId, $HMACKey);
+    }
+
+    /*Returns array containing unserialized responses for video object post
+     *
+     * @return array
+     * */
+    public function getVideoUploadedRes() {
+        return $videoUploadResult;
     }
 
     public function getUrl($pointType = PlatformType::OBJ_ACCESS_PNT, $method = 'GET', $id = null)
@@ -127,6 +136,7 @@ class Platform extends PlatformWrap
                     return false;
                 }
                 $imageId = $imageUploadResult['response']['object']['id'];
+                $this->videoUploadResult[] = $imageUploadResult['response'];
             }
         }
 
