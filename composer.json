@@ -2,6 +2,7 @@
     "name": "barantaran/platformcraft",
     "description": "platformcraft CDN API",
     "type": "library",
+    "homepage": "https://github.com/MIR24/platformcraft",
     "require": {
         "guzzlehttp/guzzle": "^6.2"
     },
