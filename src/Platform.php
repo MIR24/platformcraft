@@ -59,6 +59,13 @@ class Platform extends PlatformWrap
 
     }
 
+    /**
+     * https://doc.platformcraft.ru/filespot/api/#objects
+     *
+     * @param $filePath
+     * @param $name
+     * @return array|false|null
+     */
     public function postObject($filePath, $name = null)
     {
         $accessPointUrl = $this->getAccessPointUrl();
@@ -90,6 +97,18 @@ class Platform extends PlatformWrap
         return $this->getResult($accessPointUrl, $response);
     }
 
+    /**
+     * @param $path
+     * @return false|array
+     */
+    public function addFile($filePath) {
+        $fileUploadResult = $this->postObject($filePath);
+        if (!$fileUploadResult) {
+            return false;
+        }
+
+        return $fileUploadResult['response']['object'];
+    }
 
     /*
     *   $videos = ['720p' => ['id' => '', 'path' => '', 'name' => '']]
